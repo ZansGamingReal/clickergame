@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Clicker Game with Save System</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            background-color: #282c34;
+            color: #61dafb;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        #clicker-button {
+            padding: 20px 40px;
+            font-size: 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #clicker-button:hover {
+            background-color: #45a049;
+        }
+
+        #counter {
+            font-size: 40px;
+            margin-top: 20px;
+        }
+
+        #upgrade-section {
+            margin-top: 30px;
+        }
+
+        .upgrade-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #f39c12;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .upgrade-button:hover {
+            background-color: #e67e22;
+        }
+
+        #rebirth-button {
+            margin-top: 30px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #rebirth-button:hover {
+            background-color: #8e44ad;
+        }
+
+        #save-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #save-button:hover {
+            background-color: #3498db;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Advanced Clicker Game</h1>
+<button id="clicker-button">Click Me!</button>
+<div id="counter">Clicks: 0</div>
+
+<div id="upgrade-section">
+    <h2>Upgrades</h2>
+    <button id="upgrade-click-value" class="upgrade-button">Upgrade Click Value (Cost: 50)</button><br>
+    <button id="buy-auto-clicker" class="upgrade-button">Buy Auto Clicker (Cost: 100)</button><br>
+    <button id="buy-faster-auto-clicker" class="upgrade-button">Buy Faster Auto Clicker (Cost: 500)</button><br>
+    <button id="rebirth-button">Rebirth (Cost: 1000)</button>
+</div>
+
+<button id="save-button">Save Progress</button>
+
+<script>
+    let clicks = 0;
+    let clickValue = 1;
+    let autoClickerCount = 0;
+    let fasterAutoClickerCount = 0;
+    let rebirthMultiplier = 1;
+    let upgradeClickValueCost = 50;
+    let autoClickerCost = 100;
+    let fasterAutoClickerCost = 500;
+    let rebirthCost = 1000;
+
+    const clickerButton = document.getElementById('clicker-button');
+    const counterDisplay = document.getElementById('counter');
+    const upgradeClickValueButton = document.getElementById('upgrade-click-value');
+    const autoClickerButton = document.getElementById('buy-auto-clicker');
+    const fasterAutoClickerButton = document.getElementById('buy-faster-auto-clicker');
+    const rebirthButton = document.getElementById('rebirth-button');
+    const saveButton = document.getElementById('save-button');
+
+    // Save game state in localStorage
+    function saveGame() {
+        const gameState = {
+            clicks,
+            clickValue,
+            autoClickerCount,
+            fasterAutoClickerCount,
+            rebirthMultiplier,
+            upgradeClickValueCost,
+            autoClickerCost,
+            fasterAutoClickerCost,
+            rebirthCost
+        };
+        localStorage.setItem('clickerGameSave', JSON.stringify(gameState));
+        alert("Game saved!");
+    }
+
+    // Load game state from localStorage
+    function loadGame() {
+        const savedState = JSON.parse(localStorage.getItem('clickerGameSave'));
+        if (savedState) {
+            clicks = savedState.clicks;
+            clickValue = savedState.clickValue;
+            autoClickerCount = savedState.autoClickerCount;
+            fasterAutoClickerCount = savedState.fasterAutoClickerCount;
+            rebirthMultiplier = savedState.rebirthMultiplier;
+            upgradeClickValueCost = savedState.upgradeClickValueCost;
+            autoClickerCost = savedState.autoClickerCost;
+            fasterAutoClickerCost = savedState.fasterAutoClickerCost;
+            rebirthCost = savedState.rebirthCost;
+
+            updateCounter();
+            updateButtons();
+        }
+    }
+
+    // Function to update the display of clicks
+    function updateCounter() {
+        counterDisplay.textContent = `Clicks: ${clicks}`;
+    }
+
+    // Function to update button texts based on cost
+    function updateButtons() {
+        upgradeClickValueButton.textContent = `Upgrade Click Value (Cost: ${upgradeClickValueCost})`;
+        autoClickerButton.textContent = `Buy Auto Clicker (Cost: ${autoClickerCost})`;
+        fasterAutoClickerButton.textContent = `Buy Faster Auto Clicker (Cost: ${fasterAutoClickerCost})`;
+        rebirthButton.textContent = `Rebirth (Cost: ${rebirthCost})`;
+    }
+
+    // Click event for clicking button
+    clickerButton.addEventListener('click', () => {
+        clicks += clickValue * rebirthMultiplier;
+        updateCounter();
+    });
+
+    // Click event for upgrading click value
+    upgradeClickValueButton.addEventListener('click', () => {
+        if (clicks >= upgradeClickValueCost) {
+            clicks -= upgradeClickValueCost;
+            clickValue += 1;
+            upgradeClickValueCost *= 2;
+            updateCounter();
+            updateButtons();
+        }
+    });
+
+    // Click event for buying auto clicker
+    autoClickerButton.addEventListener('click', () => {
+        if (clicks >= autoClickerCost) {
+            clicks -= autoClickerCost;
+            autoClickerCount += 1;
+            autoClickerCost *= 2;
+            updateCounter();
+            updateButtons();
+        }
+    });
+
+    // Click event for buying faster auto clicker
+    fasterAutoClickerButton.addEventListener('click', () => {
+        if (clicks >= fasterAutoClickerCost) {
+            clicks -= fasterAutoClickerCost;
+            fasterAutoClickerCount += 1;
+            fasterAutoClickerCost *= 2;
+            updateCounter();
+            updateButtons();
+        }
+    });
+
+    // Rebirth event
+    rebirthButton.addEventListener('click', () => {
+        if (clicks >= rebirthCost) {
+            clicks = 0;
+            clickValue = 1;
+            rebirthMultiplier *= 2;
+            upgradeClickValueCost = 50;
+            autoClickerCost = 100;
+            fasterAutoClickerCost = 500;
+            rebirthCost *= 2;
+            updateCounter();
+            updateButtons();
+        }
+    });
+
+    // Auto clicker function to click automatically
+    setInterval(() => {
+        if (autoClickerCount > 0) {
+            clicks += autoClickerCount * rebirthMultiplier;
+            updateCounter();
+        }
+        if (fasterAutoClickerCount > 0) {
+            clicks += fasterAutoClickerCount * 2 * rebirthMultiplier;
+            updateCounter();
+        }
+    }, 1000);
+
+    // Save button event
+    saveButton.addEventListener('click', saveGame);
+
+    // Load game on page load
+    window.onload = loadGame;
+</script>
+
+</body>
+</html>
